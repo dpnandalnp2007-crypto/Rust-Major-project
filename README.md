@@ -1,4 +1,4 @@
-# Rust-Major-projectt
+# Rust-Major-project
 # 🛡️ Identity & Access Management (IAM) Platform
 
 ![Rust](https://img.shields.io/badge/Rust-1.75+-orange.svg?logo=rust)
