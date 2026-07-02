@@ -45,7 +45,7 @@ To run this project locally, ensure you have Rust and a PostgreSQL instance runn
 cargo install sqlx-cli --no-default-features --features rustls,postgres
 ```
 ```bash
-git clone <your-repository-url>
+git clone <https://github.com/dpnandalnp2007-crypto/Rust-Major-projectt.git>
 cd iam-platform
 cp .env.example .env
 ```
