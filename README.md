@@ -11,29 +11,64 @@
 
 ---
 
-## ✨ Core Features
+## 1. System Overview
+This project is a production-grade Identity and Access Management (IAM) backend platform. It is designed to handle core authentication, authorization, and tenant routing by managing Users, Organizations, Roles, and Permissions. The system acts as a centralized gatekeeper to securely answer who a user is, what organization they belong to, and what actions they are permitted to perform.
 
-- **Multi-Tenant Architecture:** Seamlessly manage users across isolated organizations. A single user can hold different roles in different organizations.
-- **Granular RBAC:** Dynamic Permission evaluation (`role:create`, `user:delete`) mapped through custom organizational roles.
-- **Robust Security:** JWT-based stateless authentication, cryptographically hashed passwords (Argon2), and scoped machine-to-machine API keys.
-- **Audit Traceability:** Immutable audit logging for all critical state mutations.
-- **Pluggable Persistence:** Utilizes the Repository Pattern to hot-swap between a live PostgreSQL cluster and an in-memory datastore for blazing-fast integration testing.
+--- 
 
----
-
-## 🛠️ Technology Stack
-
-| Category | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Core Language** | `Rust` | Memory safety, zero-cost abstractions, thread safety. |
-| **Web Framework** | `Axum` / `Tokio` | High-performance, asynchronous HTTP routing. |
-| **Database** | `PostgreSQL` | Relational data integrity and JSONB support. |
-| **Persistence** | `SQLx` | Compile-time validated SQL queries and migrations. |
-| **Security** | `jsonwebtoken` / `argon2` | Secure session management and credential hashing. |
+## 2. Technical Stack
+The platform is built with a focus on performance, safety, and maintainability using the following technologies:
+* **Language:** Rust
+* **Web Framework:** Axum
+* **Database:** PostgreSQL
+* **Database Driver / Migrations:** SQLx
+* **Authentication:** JWT (JSON Web Tokens) with Argon2 password hashing
 
 ---
 
-## 📂 Project Structure
+## 3. Core Features
+The system implements robust enterprise-level access controls:
+* **Authentication & Session Management:** Secure user registration, login, and refresh token flows with session tracking and revocation.
+* **Role-Based Access Control (RBAC):** Granular permission evaluation tied to custom roles within specific organizations.
+* **Organization Management:** Multi-tenant architecture allowing users to hold different roles across different organizations.
+* **API Key Infrastructure:** Generation and secure hashed storage of scoped API keys for programmatic access.
+* **Audit Logging:** Immutable tracking of critical system actions (e.g., role creation, member addition) for accountability.
+
+---
+
+## 4. Setup & Installation
+To run this project locally, ensure you have Rust and a PostgreSQL instance running.
+
+
+
+```bash
+cargo install sqlx-cli --no-default-features --features rustls,postgres
+```
+```bash
+git clone <your-repository-url>
+cd iam-platform
+cp .env.example .env
+```
+```bash
+sqlx database create
+sqlx migrate run
+```
+```bash
+cargo run
+cargo test
+cargo test --test integration_tests
+```
+----
+
+## 5. Testing Strategy
+The platform ensures reliability through a dual-layered testing approach utilizing the Repository Pattern:
+* **Unit Tests:** Validates core cryptography, JWT lifecycles, and pagination mathematics in isolation.
+* **Integration Tests:** Utilizes a custom `MemoryRepository` alongside the `tower` crate's `.oneshot()` method to simulate end-to-end HTTP request flows (like user registration) without requiring a live database connection. Run the test suite using:
+  `cargo test`
+--- 
+
+
+## 6.  📂 Project Structure
 
 The codebase strictly adheres to a decoupled, layered architecture to guarantee separation of concerns.
 
@@ -54,8 +89,9 @@ The codebase strictly adheres to a decoupled, layered architecture to guarantee 
     ├── unit_tests.rs       # Isolated cryptography & pure function tests
     └── integration_tests.rs# End-to-end HTTP request flows (Memory DB)
 ```
+---
 
-## 6. Architecture Diagram
+## 7. Architecture Diagram
 The platform follows a layered, decoupled architecture to ensure clear separation of concerns and maintainability.
 
 ```mermaid
@@ -79,3 +115,16 @@ flowchart TD
         Repo --> Memory[MemoryRepository for Tests]
         Postgres --> DB[(PostgreSQL Database)]
     end
+```
+
+---
+
+## 🧠 What I Have Learnt
+
+* **Advanced Trait Abstraction:** Mastered Rust's ownership model and dynamic dispatch (`Arc<dyn AppRepository>`), advancing beyond traditional manual memory management to safely swap database implementations.
+* **Stateful Async Orchestration:** Safely shared thread-safe application state across concurrent tasks using Axum, eliminating data races.
+* **Type-Driven Security:** Enforced authorization at the compiler level via the `FromRequestParts` trait, rejecting invalid HTTP requests before execution.
+* **Strategic Systems Engineering:** Architected a decoupled, production-ready backend that scales, demonstrating the strict engineering standards required for high-impact enterprise environments.
+
+
+
